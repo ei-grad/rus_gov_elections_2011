@@ -6,6 +6,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+plt.rc('font', **{
+    'serif': 'DejaVu Serif',
+    'sans-serif': 'DejaVu Sans'
+})
+
+
 def load_data(fname, region=None, uics=None):
 
     lines = [
