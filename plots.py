@@ -45,7 +45,15 @@ def party_split(data, party, proc):
     return d1, d2
 
 
-def plot2(d1, d2, dp=1000):
+def ppl_by_uic_party_percent_hist1(d, dp=1000):
+    for i in range(1, 7):
+        y, x = np.histogram(d[:,i] * 100 / d[:,1:].sum(axis=1), dp, (0, 100),
+                            weights=d[:,i])
+        plt.plot(x[:-1], y)
+    plt.show()
+
+
+def ppl_by_uic_party_percent_hist2(d1, d2, dp=1000):
 
     plt.subplot(2, 1, 1)
     for i in range(1, 7):
