@@ -54,6 +54,10 @@ def load_data(fname, region=None, uics=None):
                     dtype=np.float)
 
 
+def presence(data):
+    return data[:,1:].sum(axis=1) / data[:,0]
+
+
 def presence_split(data, percent):
     d1 = np.array(filter(
         lambda d: d[1:].sum() * 100 / d[0] < percent,
@@ -100,10 +104,11 @@ def votes_per_uic_by_party_histogram(spl, d, title=None,
     spl.set_xlim(0, 100)
     spl.grid(True)
 
+    s = d[:,1:].sum(axis=1)
+
     for i in range(1, 8):
-        y, x = np.histogram(d[:,i] * 100 / d[:,1:].sum(axis=1),
-                            dp, (0, 100),
-                            weights=d[:,i])
+        y, x = np.histogram(d[:,i] * 100 / s,
+                            dp, (0, 100), weights=d[:,i])
         spl.plot(x[:-1], y)
 
 
@@ -118,6 +123,7 @@ def votes_by_percents_histogram(data, tr1=45., tr2=90., dp=1000):
     votes_per_uic_by_party_histogram(
         splots[0], data,
         u"Распределение голосов по всем участкам",
+        dp=dp
     )
 
     data2, data3 = presence_split(data, tr1)
@@ -125,21 +131,24 @@ def votes_by_percents_histogram(data, tr1=45., tr2=90., dp=1000):
     # 2
     votes_per_uic_by_party_histogram(
         splots[1], data2,
-        u"Распределение голосов по участкам с явкой меньше %.2g%%" % tr1
+        u"Распределение голосов по участкам с явкой меньше %.2g%%" % tr1,
+        dp=dp
     )
 
     # 3
     votes_per_uic_by_party_histogram(
         splots[2], data3,
         u"Распределение голосов по участкам с явкой >= %.2g%%" % tr1,
-        ylabel=ylabel
+        ylabel=ylabel,
+        dp=dp
     )
 
     # 4
     votes_per_uic_by_party_histogram(
         splots[3], presence_cut(data, tr1, tr2),
         u"Распределение голосов по участкам с явкой "
-        u"<%.2g%% или > %.2g%%" % (tr1, tr2)
+        u"<%.2g%% или > %.2g%%" % (tr1, tr2),
+        dp=dp
     )
 
     # 5
@@ -147,7 +156,8 @@ def votes_by_percents_histogram(data, tr1=45., tr2=90., dp=1000):
         splots[4], presence_gate(data, tr1, tr2),
         u"Распределение голосов по участкам с явкой "
         u"от %.2g%% до %.2g%%" % (tr1, tr2),
-        xlabel=xlabel
+        xlabel=xlabel,
+        dp=dp
     )
 
     for i in range(7):
